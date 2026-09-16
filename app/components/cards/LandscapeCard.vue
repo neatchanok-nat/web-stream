@@ -10,7 +10,7 @@ const props = withDefaults(
 )
 
 const { has, toggle } = useMyList()
-const art = computed(() => landscapeArt(props.title.artSeed))
+const art = computed(() => props.title.imageUrl ?? landscapeArt(props.title.artSeed))
 const saved = computed(() => has(props.title.id))
 const meta = computed(() =>
   [
@@ -25,7 +25,7 @@ const meta = computed(() =>
   <article class="group/land relative" :style="width ? { width } : undefined">
     <NuxtLink :to="`/movie/${title.id}`" :aria-label="title.title" class="block">
       <div
-        class="relative aspect-video overflow-hidden rounded-xl bg-surface card-edge transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/land:-translate-y-1.5 group-hover/land:shadow-[0_30px_60px_-24px_#000]"
+        class="relative aspect-video overflow-hidden rounded-xs bg-surface transition-all duration-300 group-hover/land:-translate-y-1 group-hover/land:shadow-[0_24px_50px_-26px_#000]"
       >
         <img
           :src="art"
@@ -33,8 +33,9 @@ const meta = computed(() =>
           loading="lazy"
           decoding="async"
           class="size-full object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/land:scale-107"
+          :class="title.imageUrl && 'object-top'"
         />
-        <div class="absolute inset-0 scrim-b" />
+        <div class="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black/55 to-transparent" />
 
         <div class="absolute inset-x-3 top-3 flex items-center justify-between gap-2">
           <TierBadge :tier="title.tier" compact />
@@ -57,20 +58,22 @@ const meta = computed(() =>
           </span>
         </div>
 
-        <div class="absolute inset-x-0 bottom-0 p-3.5 sm:p-4">
-          <h3 class="line-clamp-1 text-sm font-semibold text-hi sm:text-[15px]">
-            {{ title.title }}
-          </h3>
-          <p class="mt-1 flex flex-wrap items-center gap-x-1.5 text-[11px] text-white/60">
-            <span>{{ KIND_LABEL[title.kind] }}</span>
-            <template v-for="m in meta" :key="m">
-              <span class="text-white/25">•</span><span>{{ m }}</span>
-            </template>
-          </p>
-          <p v-if="showSynopsis" class="mt-1.5 line-clamp-2 text-xs leading-relaxed text-white/55">
-            {{ title.synopsis }}
-          </p>
-        </div>
+      </div>
+
+      <!-- text sits under the artwork, like iHaveTicket's .product-card .content -->
+      <div class="pt-3 pr-2">
+        <h3 class="line-clamp-2 text-base/[1.1] font-semibold text-hi sm:text-lg/[1.1]">
+          {{ title.title }}
+        </h3>
+        <p class="mt-2 flex flex-wrap items-center gap-x-1.5 text-xs text-mid sm:mt-3 sm:text-sm">
+          <span>{{ KIND_LABEL[title.kind] }}</span>
+          <template v-for="m in meta" :key="m">
+            <span class="text-white/25">•</span><span>{{ m }}</span>
+          </template>
+        </p>
+        <p v-if="showSynopsis" class="mt-2 line-clamp-2 text-xs leading-relaxed text-lo sm:text-sm">
+          {{ title.synopsis }}
+        </p>
       </div>
     </NuxtLink>
 

@@ -1,5 +1,8 @@
 <template>
   <div class="min-h-svh bg-ink">
+    <!-- fixed brand canvas: plum gradient + pink/purple glows + grid -->
+    <div class="bg-base" aria-hidden="true" />
+
     <Navbar />
 
     <!-- bottom padding clears the mobile tab bar -->

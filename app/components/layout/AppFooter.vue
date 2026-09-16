@@ -12,8 +12,16 @@ const year = new Date().getFullYear() + 543
 </script>
 
 <template>
-  <footer class="mt-20 border-t border-line bg-ink-soft">
-    <div class="shell py-12 lg:py-16">
+  <!-- footer band mirrors iHaveTicket's FooterBar: 4px pink rule over a
+       magenta→indigo wash with a plum glow behind the middle -->
+  <footer
+    class="relative mt-20 border-t-4 border-accent bg-[linear-gradient(105deg,#130022_0%,#230030_42%,#3b064e_68%,#31247b_100%)]"
+  >
+    <div
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(80%_120%_at_50%_35%,rgba(105,0,89,0.55),transparent_65%)]"
+      aria-hidden="true"
+    />
+    <div class="relative shell py-12 lg:py-16">
       <div class="grid gap-10 lg:grid-cols-[1.4fr_2fr]">
         <div>
           <AppLogo size="md" />
@@ -30,12 +38,12 @@ const year = new Date().getFullYear() + 543
 
         <div class="grid grid-cols-2 gap-8 sm:grid-cols-3">
           <div v-for="group in FOOTER_LINKS" :key="group.title">
-            <h3 class="text-[13px] font-bold tracking-wide text-hi">{{ group.title }}</h3>
+            <h3 class="text-lg/6 font-semibold text-hi">{{ group.title }}</h3>
             <ul class="mt-3.5 space-y-2.5">
               <li v-for="l in group.links" :key="l.label">
                 <NuxtLink
                   :to="l.to"
-                  class="text-[13px] text-lo transition-colors hover:text-hi"
+                  class="text-base/5 text-mid transition-colors hover:text-hi"
                 >
                   {{ l.label }}
                 </NuxtLink>

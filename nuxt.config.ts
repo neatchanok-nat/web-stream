@@ -33,7 +33,7 @@ export default defineNuxtConfig({
           content:
             'DUDI บริการสตรีมมิงบันเทิงไทย ดูหนัง ละคร ซีรีส์ รายการวาไรตี้ และไลฟ์สด ได้ทุกที่ทุกเวลา',
         },
-        { name: 'theme-color', content: '#0B0B0F' },
+        { name: 'theme-color', content: '#07030D' },
       ],
       link: [
         // Brand mark — SVG for modern browsers, ICO/PNG as fallbacks
@@ -45,7 +45,7 @@ export default defineNuxtConfig({
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
         {
           rel: 'stylesheet',
-          href: 'https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap',
+          href: 'https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&display=swap',
         },
       ],
     },

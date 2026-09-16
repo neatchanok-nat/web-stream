@@ -13,7 +13,7 @@ import {
 import { ALL_TITLES, getTitle } from '~/data/catalog'
 import { formatCompact, formatRuntime, KIND_LABEL } from '~/utils/format'
 import { titleToContent } from '~/utils/content'
-import type { AccessState } from '~/types'
+import type { AccessState, Title } from '~/types'
 
 definePageMeta({ layout: 'player' })
 
@@ -70,10 +70,16 @@ const views = computed(() => 180_000 + ((t.value.id.length * 733_211) % 4_200_00
 const likes = computed(() => Math.round(views.value * 0.041))
 const published = computed(() => `เผยแพร่เมื่อ 12 ก.ย. ${t.value.year + 543}`)
 
-const upNext = computed(() =>
-  ALL_TITLES.filter((x) => x.id !== t.value.id && x.genres.some((g) => t.value.genres.includes(g)))
-    .slice(0, 10),
-)
+/* Same kind first, then anything sharing a genre — a concert with a
+   one-off genre would otherwise have nothing to line up next. */
+const upNext = computed(() => {
+  const affinity = (x: Title) =>
+    (x.kind === t.value.kind ? 2 : 0) +
+    (x.genres.some((g) => t.value.genres.includes(g)) ? 1 : 0)
+  return ALL_TITLES.filter((x) => x.id !== t.value.id && affinity(x) > 0)
+    .sort((a, b) => affinity(b) - affinity(a))
+    .slice(0, 10)
+})
 const alsoWatch = computed(() =>
   ALL_TITLES.filter((x) => x.id !== t.value.id && x.kind === t.value.kind).slice(0, 6),
 )
@@ -93,6 +99,8 @@ useHead(() => ({ title: `กำลังรับชม ${t.value.title} — DUD
             :heading="t.title"
             :subheading="episodeLabel"
             :duration="durationSec"
+            :src="t.videoUrl"
+            :poster="t.imageUrl"
             :back-to="`/movie/${t.id}`"
           />
           <PremiumLockPanel v-else :content="content" :state="access" />

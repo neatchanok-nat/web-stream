@@ -17,8 +17,9 @@ import { backdropArt } from '~/utils/artwork'
 import { formatTime, formatCompact } from '~/utils/format'
 
 /**
- * Mock OTT player. Every control is visual only — a fake timeline
- * advances while "playing" so the chrome can be evaluated in motion.
+ * OTT player. With `src` it streams the real HLS source; without one it
+ * falls back to the mock timeline that advances while "playing", so the
+ * chrome can still be evaluated on artwork-only catalogue titles.
  */
 const props = withDefaults(
   defineProps<{
@@ -27,6 +28,10 @@ const props = withDefaults(
     subheading?: string
     /** Total runtime in seconds (ignored when `live`) */
     duration?: number
+    /** HLS manifest (.m3u8). Omit for the mock timeline. */
+    src?: string
+    /** Real key art — falls back to artwork generated from `seed` */
+    poster?: string
     live?: boolean
     viewers?: number
     backTo?: string
@@ -36,11 +41,49 @@ const props = withDefaults(
 
 const playing = ref(false)
 const buffering = ref(false)
-const currentTime = ref(props.live ? 0 : 1284)
+const currentTime = ref(props.live || props.src ? 0 : 1284)
 const volume = ref(72)
 const muted = ref(false)
 const controlsVisible = ref(true)
 const menu = ref<'quality' | 'subtitle' | 'speed' | null>(null)
+
+/* ---------------------------------------------------------- real video */
+const rootEl = ref<HTMLElement | null>(null)
+const videoEl = ref<HTMLVideoElement | null>(null)
+const realDuration = ref(0)
+const failed = ref(false)
+let hls: { destroy: () => void } | null = null
+
+/** Runtime metadata beats the catalogue figure once the manifest loads. */
+const total = computed(() => (realDuration.value > 0 ? realDuration.value : props.duration))
+
+async function attach(src?: string) {
+  hls?.destroy()
+  hls = null
+  failed.value = false
+  realDuration.value = 0
+  const el = videoEl.value
+  if (!el || !src) return
+
+  // Safari plays HLS natively; everyone else needs hls.js.
+  if (el.canPlayType('application/vnd.apple.mpegurl')) {
+    el.src = src
+    return
+  }
+  const { default: Hls } = await import('hls.js')
+  if (!Hls.isSupported()) {
+    el.src = src
+    return
+  }
+  const instance = new Hls({ enableWorker: true })
+  instance.on(Hls.Events.ERROR, (_e, data) => {
+    if (data.fatal) failed.value = true
+  })
+  instance.loadSource(src)
+  instance.attachMedia(el)
+  hls = instance
+}
+
 
 const QUALITIES = ['อัตโนมัติ (1080p)', '4K Ultra HD', '1080p', '720p', '480p']
 const SUBTITLES = ['ปิด', 'ไทย', 'อังกฤษ', 'ไทย (สำหรับผู้บกพร่องทางการได้ยิน)']
@@ -50,9 +93,9 @@ const quality = ref(QUALITIES[0] as string)
 const subtitle = ref('ไทย')
 const speed = ref('ปกติ')
 
-const art = computed(() => backdropArt(props.seed))
+const art = computed(() => props.poster ?? backdropArt(props.seed))
 const progress = computed(() =>
-  props.live ? 100 : Math.min(100, (currentTime.value / props.duration) * 100),
+  props.live ? 100 : Math.min(100, (currentTime.value / (total.value || 1)) * 100),
 )
 /** Buffered slightly ahead of playhead — a detail real players always show. */
 const buffered = computed(() => Math.min(100, progress.value + 12))
@@ -69,6 +112,13 @@ function showControls() {
 }
 
 function togglePlay() {
+  const el = videoEl.value
+  if (props.src && el) {
+    if (el.paused) void el.play().catch(() => (failed.value = true))
+    else el.pause()
+    showControls()
+    return
+  }
   playing.value = !playing.value
   if (playing.value) {
     buffering.value = true
@@ -77,14 +127,52 @@ function togglePlay() {
   showControls()
 }
 
+function seekTo(sec: number) {
+  const next = Math.max(0, Math.min(total.value, sec))
+  currentTime.value = next
+  if (videoEl.value) videoEl.value.currentTime = next
+}
+
 function seek(e: Event) {
   const pct = Number((e.target as HTMLInputElement).value)
-  currentTime.value = (pct / 100) * props.duration
+  seekTo((pct / 100) * total.value)
 }
 
 function skip(sec: number) {
-  currentTime.value = Math.max(0, Math.min(props.duration, currentTime.value + sec))
+  seekTo(currentTime.value + sec)
   showControls()
+}
+
+function onLoadedMetadata() {
+  const el = videoEl.value
+  if (!el) return
+  if (Number.isFinite(el.duration)) realDuration.value = el.duration
+  el.volume = muted.value ? 0 : volume.value / 100
+  el.muted = muted.value
+}
+
+watch([volume, muted], ([v, m]) => {
+  const el = videoEl.value
+  if (!el) return
+  el.volume = v / 100
+  el.muted = m
+})
+
+watch(
+  () => props.src,
+  (src) => attach(src),
+)
+
+function toggleFullscreen() {
+  if (document.fullscreenElement) void document.exitFullscreen()
+  else void rootEl.value?.requestFullscreen?.().catch(() => {})
+}
+
+function togglePip() {
+  const el = videoEl.value
+  if (!el?.requestPictureInPicture) return
+  if (document.pictureInPictureElement) void document.exitPictureInPicture()
+  else void el.requestPictureInPicture().catch(() => {})
 }
 
 function toggleMenu(m: typeof menu.value) {
@@ -93,6 +181,10 @@ function toggleMenu(m: typeof menu.value) {
 }
 
 onMounted(() => {
+  if (props.src) {
+    void attach(props.src)
+    return
+  }
   ticker = setInterval(() => {
     if (!playing.value || buffering.value) return
     currentTime.value = props.live
@@ -103,23 +195,51 @@ onMounted(() => {
 onBeforeUnmount(() => {
   clearInterval(ticker)
   clearTimeout(hideTimer)
+  hls?.destroy()
 })
 </script>
 
 <template>
   <div
+    ref="rootEl"
     class="group/player relative aspect-video w-full overflow-hidden bg-black select-none sm:rounded-2xl"
     :class="controlsVisible ? 'cursor-default' : 'cursor-none'"
     @mousemove="showControls"
     @mouseleave="playing && !menu && (controlsVisible = false)"
     @click.self="togglePlay"
   >
+    <video
+      v-if="src"
+      ref="videoEl"
+      :poster="art"
+      playsinline
+      preload="metadata"
+      class="size-full bg-black object-contain"
+      @click="togglePlay"
+      @loadedmetadata="onLoadedMetadata"
+      @timeupdate="currentTime = ($event.target as HTMLVideoElement).currentTime"
+      @durationchange="onLoadedMetadata"
+      @play="playing = true"
+      @pause="playing = false"
+      @waiting="buffering = true"
+      @playing="((buffering = false), (playing = true))"
+      @ended="playing = false"
+      @error="failed = true"
+    />
     <img
+      v-else
       :src="art"
       :alt="heading ? `ภาพนิ่งจาก ${heading}` : 'ตัวอย่างวิดีโอ'"
       class="pointer-events-none size-full object-cover transition-all duration-700"
       :class="playing ? 'scale-100 opacity-95' : 'scale-105 opacity-70'"
     />
+
+    <p
+      v-if="failed"
+      class="absolute inset-x-0 top-1/2 px-6 text-center text-sm font-medium text-white/80"
+    >
+      เล่นวิดีโอไม่สำเร็จ · ลองโหลดหน้านี้ใหม่อีกครั้ง
+    </p>
 
     <!-- idle / paused veil -->
     <div
@@ -240,7 +360,7 @@ onBeforeUnmount(() => {
 
         <span v-if="!live" class="ml-1.5 shrink-0 text-[11px] font-medium text-white/80 tabular-nums sm:text-xs">
           {{ formatTime(currentTime) }}
-          <span class="text-white/35"> / {{ formatTime(duration) }}</span>
+          <span class="text-white/35"> / {{ formatTime(total) }}</span>
         </span>
         <span v-else class="ml-1.5 flex shrink-0 items-center gap-1.5 text-[11px] font-semibold text-white/85">
           <span class="size-1.5 rounded-full bg-live animate-live-pulse" /> ถ่ายทอดสด
@@ -328,10 +448,15 @@ onBeforeUnmount(() => {
             </Transition>
           </div>
 
-          <IconButton label="เล่นในหน้าต่างเล็ก" size="sm" class="hidden sm:inline-flex">
+          <IconButton
+            label="เล่นในหน้าต่างเล็ก"
+            size="sm"
+            class="hidden sm:inline-flex"
+            @click="togglePip"
+          >
             <PictureInPicture2 class="size-4.5" />
           </IconButton>
-          <IconButton label="เต็มหน้าจอ" size="sm">
+          <IconButton label="เต็มหน้าจอ" size="sm" @click="toggleFullscreen">
             <Maximize class="size-4.5" />
           </IconButton>
         </div>

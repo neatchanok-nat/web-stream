@@ -17,8 +17,8 @@ const saved = computed(() => has(t.value.id))
 const { requestPlay, checkAccess } = useAccessControl()
 const locked = computed(() => checkAccess(t.value) !== 'allow')
 
-const backdrop = computed(() => backdropArt(t.value.backdropSeed))
-const poster = computed(() => posterArt(t.value.artSeed))
+const backdrop = computed(() => t.value.imageUrl ?? backdropArt(t.value.backdropSeed))
+const poster = computed(() => t.value.imageUrl ?? posterArt(t.value.artSeed))
 
 const meta = computed(() =>
   [

@@ -4,7 +4,7 @@
    session state lives in localStorage. No backend.
    ============================================================ */
 
-export type ContentKind = 'movie' | 'drama' | 'series' | 'show'
+export type ContentKind = 'movie' | 'drama' | 'series' | 'show' | 'concert'
 
 export type AccessTier = 'free' | 'premium'
 
@@ -97,6 +97,10 @@ export interface Title {
   backdropSeed: string
   badges?: string[]
   trailerLength?: string
+  /** HLS (.m3u8) source — when set the player streams it for real */
+  videoUrl?: string
+  /** Real key art — replaces the generated artwork everywhere when set */
+  imageUrl?: string
 }
 
 export interface ContinueItem {

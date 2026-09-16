@@ -17,7 +17,7 @@ const { requestPlay } = useAccessControl()
 
 const current = computed(() => props.items[index.value] as Title)
 const saved = computed(() => has(current.value.id))
-const backdrops = computed(() => props.items.map((t) => backdropArt(t.backdropSeed)))
+const backdrops = computed(() => props.items.map((t) => t.imageUrl ?? backdropArt(t.backdropSeed)))
 
 const meta = computed(() => {
   const t = current.value
@@ -41,36 +41,66 @@ onBeforeUnmount(() => clearInterval(timer))
 </script>
 
 <template>
+  <!--
+    Banner band, shaped like iHaveTicket's .section-banner: a blurred wash
+    of the artwork spans the viewport while the banner itself is boxed to
+    1280px. Heights follow theirs (488 desktop / 380 tablet) with extra
+    room on phones so the play + detail buttons stay reachable.
+  -->
   <section
-    class="relative isolate flex h-[78svh] max-h-[880px] min-h-[540px] items-end overflow-hidden lg:h-[72vh]"
+    class="relative isolate overflow-hidden bg-[#271322]"
     aria-roledescription="carousel"
     aria-label="เนื้อหาแนะนำ"
     @mouseenter="paused = true"
     @mouseleave="paused = false"
   >
-    <!-- artwork stack -->
-    <div class="absolute inset-0 -z-10">
+    <!-- blurred wash behind the box -->
+    <div class="absolute inset-0 -z-10" aria-hidden="true">
       <img
         v-for="(src, i) in backdrops"
-        :key="src"
+        :key="`wash-${src}`"
         :src="src"
-        :alt="i === index ? `ภาพประกอบของ ${items[i]?.title}` : ''"
-        :aria-hidden="i !== index"
-        class="absolute inset-0 size-full object-cover transition-all duration-[1400ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
-        :class="i === index ? 'scale-100 opacity-100' : 'scale-105 opacity-0'"
-        :loading="i === 0 ? 'eager' : 'lazy'"
+        alt=""
+        class="absolute inset-0 size-full scale-110 object-cover blur-2xl transition-opacity duration-[1400ms]"
+        :class="i === index ? 'opacity-100' : 'opacity-0'"
+        loading="lazy"
         decoding="async"
       />
-      <!-- cinematic grading -->
-      <div class="absolute inset-0 scrim-b" />
-      <div class="absolute inset-0 hidden scrim-l md:block" />
-      <div class="absolute inset-0 bg-ink/35 md:bg-ink/15" />
-      <div
-        class="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-ink/90 to-transparent"
-      />
+      <div class="absolute inset-0 bg-white/10" />
     </div>
 
-    <div class="shell w-full pb-16 sm:pb-20 lg:pb-24">
+    <div
+      class="relative mx-auto flex h-[560px] w-full max-w-[1280px] items-end overflow-hidden sm:h-[470px] lg:h-[488px]"
+    >
+      <!-- artwork stack -->
+      <div class="absolute inset-0 -z-10">
+        <img
+          v-for="(src, i) in backdrops"
+          :key="src"
+          :src="src"
+          :alt="i === index ? `ภาพประกอบของ ${items[i]?.title}` : ''"
+          :aria-hidden="i !== index"
+          class="absolute inset-0 size-full object-cover transition-all duration-[1400ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
+          :class="[
+            i === index ? 'scale-100 opacity-100' : 'scale-105 opacity-0',
+            /* portrait key art: anchor to the top of the poster */
+            items[i]?.imageUrl && 'object-top',
+          ]"
+          :loading="i === 0 ? 'eager' : 'lazy'"
+          decoding="async"
+        />
+        <!-- cinematic grading -->
+        <!-- just enough shading for the copy to read; the art stays bright -->
+        <div
+          class="absolute inset-0 bg-gradient-to-t from-[#07030d]/95 via-[#07030d]/45 to-transparent"
+        />
+        <div
+          class="absolute inset-0 hidden bg-gradient-to-r from-[#07030d]/90 via-[#07030d]/40 to-transparent md:block"
+        />
+      </div>
+
+      <!-- top padding clears the fixed navbar when the copy runs tall -->
+      <div class="w-full px-3 pt-26 pb-16 sm:px-5 sm:pt-28 sm:pb-14 lg:px-10 lg:pb-16">
       <Transition name="hero" mode="out-in">
         <div :key="current.id" class="max-w-xl lg:max-w-2xl">
           <!-- eyebrow -->
@@ -86,7 +116,7 @@ onBeforeUnmount(() => clearInterval(timer))
           </div>
 
           <h1
-            class="mt-4 text-[clamp(2.1rem,7vw,4.6rem)] leading-[1.02] font-extrabold tracking-[-0.03em] text-hi drop-shadow-[0_8px_30px_rgba(0,0,0,0.6)]"
+            class="mt-4 line-clamp-2 text-[clamp(1.9rem,4.4vw,3.25rem)] leading-[1.05] font-bold text-hi drop-shadow-[0_8px_30px_rgba(0,0,0,0.6)]"
           >
             {{ current.title }}
           </h1>
@@ -116,7 +146,7 @@ onBeforeUnmount(() => clearInterval(timer))
           </div>
 
           <p
-            class="mt-4 line-clamp-3 max-w-prose text-sm leading-relaxed text-white/70 sm:text-[15px] sm:leading-7"
+            class="mt-4 line-clamp-2 max-w-prose text-sm leading-relaxed text-white/80 sm:text-[15px] sm:leading-7"
           >
             {{ current.synopsis }}
           </p>
@@ -140,26 +170,26 @@ onBeforeUnmount(() => clearInterval(timer))
       </Transition>
     </div>
 
-    <!-- controls -->
-    <div class="absolute right-4 bottom-6 flex items-center gap-3 sm:right-7 lg:right-12">
+      <!-- mute toggle -->
       <IconButton
         :label="muted ? 'เปิดเสียงตัวอย่าง' : 'ปิดเสียงตัวอย่าง'"
         variant="glass"
         size="sm"
-        class="hidden sm:inline-flex"
+        class="absolute right-4 bottom-8 hidden sm:inline-flex lg:right-10"
         @click="muted = !muted"
       >
         <VolumeX v-if="muted" class="size-4" />
         <Volume2 v-else class="size-4" />
       </IconButton>
 
-      <div class="flex items-center gap-1.5">
+      <!-- bar indicators, active bar in brand pink -->
+      <div class="absolute inset-x-0 bottom-0 flex items-center justify-center gap-2 pb-3 sm:gap-3 sm:pb-4">
         <button
           v-for="(t, i) in items"
           :key="t.id"
           type="button"
-          class="h-1 rounded-full transition-all duration-400"
-          :class="i === index ? 'w-7 bg-white' : 'w-3 bg-white/30 hover:bg-white/60'"
+          class="h-1 w-6 rounded-[3px] transition-colors duration-300 sm:h-1.5 sm:w-15"
+          :class="i === index ? 'bg-accent' : 'bg-white hover:bg-white/70'"
           :aria-label="`ไปที่สไลด์ ${i + 1}: ${t.title}`"
           :aria-current="i === index"
           @click="go(i)"

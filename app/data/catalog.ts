@@ -3,7 +3,7 @@ import { makeCast } from './people'
 
 /* ============================================================
    DUDI — Fictional catalogue
-   20 movies · 15 dramas · 8 series · 10 shows
+   20 movies · 15 dramas · 8 series · 10 shows · 3 concerts
    All titles, synopses and artwork are original inventions.
    ============================================================ */
 
@@ -22,6 +22,10 @@ interface Draft {
   tier?: 'free' | 'premium'
   score: number
   badges?: string[]
+  /** HLS source — only the titles that have a real stream carry this */
+  videoUrl?: string
+  /** Real key art in /public — falls back to generated artwork when absent */
+  imageUrl?: string
 }
 
 function build(kind: ContentKind, drafts: Draft[]): Title[] {
@@ -677,8 +681,66 @@ export const SHOWS: Title[] = build('show', [
   },
 ])
 
+/* ------------------------------------------------------------ CONCERTS
+   The only titles backed by a real stream — everything else in the
+   catalogue is artwork-only mock data. */
+export const CONCERTS: Title[] = build('concert', [
+  {
+    id: 'ct-atom-soulful-live',
+    title: 'Atom: Soulful Live Session',
+    titleEn: 'Atom: Soulful Live Session',
+    tagline: 'ไลฟ์เซสชันสุดพิเศษ',
+    synopsis:
+      'ดื่มด่ำไปกับเสียงร้องนุ่มลึกและบทเพลงฮิตที่คุ้นเคยของ "อะตอม ชนกันต์" ในไลฟ์เซสชันสุดพิเศษที่จะพาคุณย้อนความทรงจำผ่านทุกช่วงเวลาของความรัก',
+    year: 2026,
+    rating: 'ท',
+    runtime: 105,
+    genres: ['ป็อป/โซล'],
+    tier: 'premium',
+    score: 8.6,
+    badges: ['ใหม่ล่าสุด'],
+    videoUrl:
+      'https://customer-s0975cvb3qgwr0nn.cloudflarestream.com/ad3895f1c82089c3134e646927842b22/manifest/video.m3u8',
+    imageUrl: '/posters/atom-soulful-live.jpg',
+  },
+  {
+    id: 'ct-lipta-playful-night',
+    title: 'Lipta: The Playful Night',
+    titleEn: 'Lipta: The Playful Night',
+    tagline: 'ค่ำคืนที่คุณจะไม่มีวันลืม',
+    synopsis:
+      'เตรียมพบกับความสนุกและรอยยิ้มไปกับสองหนุ่ม "ลิปตา" ที่จะมาสาดความสุขผ่านเสียงเพลงฮิตและมุกตลกสุดกวนในค่ำคืนที่คุณจะไม่มีวันลืม',
+    year: 2026,
+    rating: 'ท',
+    runtime: 130,
+    genres: ['ป็อป/อาร์แอนด์บี'],
+    tier: 'premium',
+    score: 8.4,
+    badges: ['มาแรง'],
+    videoUrl:
+      'https://customer-s0975cvb3qgwr0nn.cloudflarestream.com/7b90ff41990f605aac93a2c21d9051d0/manifest/video.m3u8',
+    imageUrl: '/posters/lipta-playful-night.jpg',
+  },
+  {
+    id: 'ct-earth-sunset-acoustic',
+    title: 'Earth Patravee: Sunset',
+    titleEn: 'Earth Patravee: Sunset',
+    tagline: 'อะคูสติกสุดชิลยามเย็น',
+    synopsis:
+      'ปล่อยใจให้สบายและผ่อนคลายไปกับเสียงร้องหวานละมุนของ "เอิ๊ต ภัทรวี" ในบรรยากาศอะคูสติกสุดชิลที่จะช่วยเยียวยาทุกความเหนื่อยล้าของคุณ',
+    year: 2026,
+    rating: 'ท',
+    runtime: 80,
+    genres: ['อินดี้ป็อป'],
+    score: 8.2,
+    videoUrl:
+      'https://customer-s0975cvb3qgwr0nn.cloudflarestream.com/252c1727d8dfcc26a7f79a145c60ae6c/manifest/video.m3u8',
+    imageUrl: '/posters/earth-sunset-acoustic.jpg',
+  },
+])
+
 /* ------------------------------------------------------------ AGGREGATES */
-export const ALL_TITLES: Title[] = [...MOVIES, ...DRAMAS, ...SERIES, ...SHOWS]
+export const ALL_TITLES: Title[] = [...CONCERTS, ...MOVIES, ...DRAMAS, ...SERIES, ...SHOWS]
 
 export const TITLE_BY_ID = new Map(ALL_TITLES.map((t) => [t.id, t]))
 

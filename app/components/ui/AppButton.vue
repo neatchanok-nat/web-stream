@@ -12,28 +12,31 @@ const props = withDefaults(
   { variant: 'primary', size: 'md', type: 'button' },
 )
 
+/* iHaveTicket's v-btn scale, 1:1 with assets/style/button.scss:
+   x-small 35/14px · small 40/14px · default 55/20px, all weight 400. */
 const sizes = {
-  sm: 'h-9 px-3.5 text-[13px] gap-1.5 rounded-lg',
-  md: 'h-11 px-5 text-sm gap-2 rounded-xl',
-  lg: 'h-13 px-7 text-[15px] gap-2.5 rounded-xl',
+  sm: 'h-[35px] min-w-16 px-2.5 text-sm/[18px] gap-2 rounded-sm',
+  md: 'h-10 min-w-16 px-2.5 text-sm/5 gap-2 rounded-sm',
+  lg: 'h-[55px] min-w-16 px-4 text-xl/[26px] gap-2.5 rounded-sm',
 } as const
 
+/* Outlined weights match theirs too: 2px at default size, 1px when small. */
 const variants = {
-  primary:
-    'bg-white text-ink hover:bg-white/90 active:scale-[0.98] shadow-[0_10px_30px_-12px_rgba(255,255,255,0.45)]',
-  secondary: 'bg-white/10 text-hi hover:bg-white/18 backdrop-blur-sm ring-1 ring-inset ring-white/12',
+  primary: 'bg-accent text-white hover:bg-accent-800',
+  secondary: 'bg-white text-iris hover:bg-mid',
   ghost: 'text-mid hover:text-hi hover:bg-white/8',
-  outline: 'text-hi ring-1 ring-inset ring-white/25 hover:ring-white/50 hover:bg-white/6',
+  outline: 'text-hi ring-inset ring-white/25 hover:ring-white/50 hover:bg-white/6',
   glass: 'glass text-hi ring-1 ring-inset ring-white/12 hover:bg-white/12',
-  live: 'bg-accent text-white hover:bg-accent-400 accent-glow active:scale-[0.98]',
+  live: 'bg-live text-white hover:bg-live-deep',
 } as const
 
 const cls = computed(() => [
-  'inline-flex select-none items-center justify-center font-semibold whitespace-nowrap',
-  'transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]',
-  'disabled:pointer-events-none disabled:opacity-45',
+  'inline-flex select-none items-center justify-center font-normal tracking-normal whitespace-nowrap normal-case',
+  'transition-colors duration-200',
+  'disabled:pointer-events-none disabled:bg-accent-200 disabled:text-white',
   sizes[props.size],
   variants[props.variant],
+  props.variant === 'outline' && (props.size === 'lg' ? 'ring-2' : 'ring-1'),
   props.block && 'w-full',
 ])
 </script>

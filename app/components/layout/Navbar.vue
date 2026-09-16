@@ -37,12 +37,7 @@ watch(() => route.fullPath, () => (mobileOpen.value = false))
 
 <template>
   <header
-    class="fixed inset-x-0 top-0 z-50 transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]"
-    :class="
-      scrolled || mobileOpen
-        ? 'glass-strong border-b border-line'
-        : 'bg-gradient-to-b from-ink/85 via-ink/35 to-transparent'
-    "
+    class="fixed inset-x-0 top-0 z-50 border-b border-[#3d3d3d] bg-[#101010] transition-all duration-300"
   >
     <nav class="shell flex items-center gap-3 sm:gap-5" :class="scrolled ? 'h-15' : 'h-17 lg:h-20'">
       <AppLogo :size="scrolled ? 'sm' : 'md'" class="lg:shrink-0" />
@@ -79,7 +74,7 @@ watch(() => route.fullPath, () => (mobileOpen.value = false))
           v-if="!isLoggedIn"
           to="/login"
           size="sm"
-          variant="secondary"
+          variant="primary"
           class="hidden md:inline-flex"
         >
           เข้าสู่ระบบ

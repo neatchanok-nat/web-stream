@@ -16,11 +16,15 @@ withDefaults(
 </script>
 
 <template>
-  <div class="mb-4 flex items-end justify-between gap-4 sm:mb-5">
+  <div class="mb-5 flex items-end justify-between gap-4 sm:mb-6">
     <div class="min-w-0">
       <h2
-        class="flex items-center gap-2.5 font-bold tracking-tight text-hi"
-        :class="size === 'lg' ? 'text-xl sm:text-2xl lg:text-3xl' : 'text-lg sm:text-xl lg:text-2xl'"
+        class="flex items-center gap-2.5 font-semibold text-hi"
+        :class="
+          size === 'lg'
+            ? 'text-[28px] leading-[34px] lg:text-[36px] lg:leading-[44px]'
+            : 'text-[24px] leading-[30px] sm:text-[28px] sm:leading-[34px] lg:text-[32px] lg:leading-10'
+        "
       >
         <span
           v-if="live"
@@ -35,7 +39,7 @@ withDefaults(
     <NuxtLink
       v-if="seeAllTo"
       :to="seeAllTo"
-      class="group/all inline-flex shrink-0 items-center gap-0.5 rounded-lg px-2 py-1 text-xs font-semibold text-mid transition-colors hover:bg-white/6 hover:text-hi sm:text-[13px]"
+      class="group/all inline-flex shrink-0 items-center gap-0.5 rounded-sm px-2 py-1 text-sm font-normal text-hi transition-colors hover:bg-white/8 sm:text-base"
     >
       {{ seeAllLabel }}
       <ChevronRight

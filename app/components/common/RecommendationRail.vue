@@ -22,7 +22,8 @@ withDefaults(
 )
 
 const WIDTHS = {
-  poster: 'w-33 sm:w-38 lg:w-44',
+  /* iHaveTicket's poster ladder: 162 → 192 → 231 → 196 */
+  poster: 'w-[162px] sm:w-[192px] lg:w-[231px] xl:w-[196px]',
   landscape: 'w-64 sm:w-76 lg:w-85',
   wide: 'w-70 sm:w-85 lg:w-100',
   live: 'w-68 sm:w-76 lg:w-84',

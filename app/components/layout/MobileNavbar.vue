@@ -23,7 +23,7 @@ const isActive = (t: (typeof TABS)[number]) => {
 
 <template>
   <nav
-    class="fixed inset-x-0 bottom-0 z-50 border-t border-line glass-strong pb-[env(safe-area-inset-bottom)] lg:hidden"
+    class="fixed inset-x-0 bottom-0 z-50 border-t border-line bg-[rgba(26,27,32,0.95)] backdrop-blur-sm pb-[env(safe-area-inset-bottom)] lg:hidden"
     aria-label="เมนูหลัก"
   >
     <ul class="grid grid-cols-5">
@@ -31,9 +31,12 @@ const isActive = (t: (typeof TABS)[number]) => {
         <NuxtLink
           :to="t.to"
           class="group/tab relative flex flex-col items-center gap-1 px-1 pt-2.5 pb-2 transition-colors duration-200"
-          :class="isActive(t) ? 'text-hi' : 'text-lo'"
+          :class="isActive(t) ? 'text-accent' : 'text-hi'"
         >
-          <span class="relative">
+          <span
+            class="relative grid h-8 place-items-center rounded-2xl px-4 transition-colors duration-200"
+            :class="isActive(t) && 'bg-accent-100'"
+          >
             <component
               :is="t.icon"
               class="size-5.5 transition-transform duration-300"
@@ -51,11 +54,7 @@ const isActive = (t: (typeof TABS)[number]) => {
               {{ count }}
             </span>
           </span>
-          <span class="text-[10px] leading-none font-semibold">{{ t.label }}</span>
-          <span
-            class="absolute inset-x-5 top-0 h-0.5 rounded-full bg-gradient-to-r from-accent-400 to-accent-glow transition-all duration-300"
-            :class="isActive(t) ? 'opacity-100' : 'opacity-0'"
-          />
+          <span class="text-[11px] leading-none font-normal sm:text-sm">{{ t.label }}</span>
         </NuxtLink>
       </li>
     </ul>

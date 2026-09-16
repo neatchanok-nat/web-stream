@@ -12,29 +12,26 @@ const props = withDefaults(
 )
 const emit = defineEmits<{ 'update:modelValue': [string] }>()
 
+/* iHaveTicket's `.v-btn.tab`: grey pill, lilac + purple when active. */
 const activeCls = computed(() =>
-  props.tone === 'accent'
-    ? 'bg-gradient-to-r from-accent-500 to-accent-600 text-white accent-glow'
-    : 'bg-white text-ink',
+  props.tone === 'accent' ? 'bg-iris-100 text-iris' : 'bg-white text-ink',
 )
 </script>
 
 <template>
-  <div class="flex items-center gap-3">
+  <div class="flex min-w-0 items-center gap-3">
     <span v-if="label" class="hidden shrink-0 text-xs font-medium text-lo sm:block">
       {{ label }}
     </span>
-    <div class="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1 py-1">
+    <div class="no-scrollbar -mx-1 flex min-w-0 gap-2 overflow-x-auto px-1 py-1">
       <button
         v-for="opt in options"
         :key="opt"
         type="button"
-        class="shrink-0 rounded-full font-semibold whitespace-nowrap ring-1 ring-inset transition-all duration-250 active:scale-95"
+        class="shrink-0 rounded-sm font-normal whitespace-nowrap transition-colors duration-200"
         :class="[
-          size === 'sm' ? 'h-8 px-3.5 text-xs' : 'h-9.5 px-4.5 text-[13px]',
-          modelValue === opt
-            ? `${activeCls} ring-transparent`
-            : 'bg-white/6 text-mid ring-white/10 hover:bg-white/12 hover:text-hi',
+          size === 'sm' ? 'h-[35px] px-3.5 text-sm' : 'h-10 px-4 text-sm',
+          modelValue === opt ? activeCls : 'bg-[#ededed] text-[#8b8b8b] hover:bg-white',
         ]"
         @click="emit('update:modelValue', opt)"
       >

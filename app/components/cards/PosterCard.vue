@@ -18,7 +18,7 @@ const props = withDefaults(
 )
 
 const { has, toggle } = useMyList()
-const art = computed(() => posterArt(props.title.artSeed))
+const art = computed(() => props.title.imageUrl ?? posterArt(props.title.artSeed))
 const saved = computed(() => has(props.title.id))
 </script>
 
@@ -30,7 +30,7 @@ const saved = computed(() => has(props.title.id))
       :aria-label="title.title"
     >
       <div
-        class="relative aspect-2/3 overflow-hidden rounded-xl bg-surface card-edge transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/card:-translate-y-1.5 group-hover/card:shadow-[0_30px_60px_-24px_#000] group-focus-within/card:-translate-y-1.5"
+        class="relative aspect-[196/283] overflow-hidden rounded-xs bg-surface transition-all duration-300 group-hover/card:-translate-y-1 group-hover/card:shadow-[0_24px_50px_-26px_#000] group-focus-within/card:-translate-y-1"
       >
         <img
           :src="art"
@@ -48,7 +48,7 @@ const saved = computed(() => has(props.title.id))
           class="absolute inset-0 grid place-items-center opacity-0 transition-all duration-300 group-hover/card:opacity-100"
         >
           <span
-            class="grid size-12 scale-75 place-items-center rounded-full bg-white/95 text-ink shadow-[0_12px_30px_-8px_rgba(0,0,0,0.8)] transition-transform duration-300 group-hover/card:scale-100"
+            class="grid size-12 scale-75 place-items-center rounded-full bg-accent text-white shadow-[0_12px_30px_-8px_rgba(0,0,0,0.8)] transition-transform duration-300 group-hover/card:scale-100"
           >
             <Play class="size-5 translate-x-px fill-current" />
           </span>
@@ -56,7 +56,7 @@ const saved = computed(() => has(props.title.id))
 
         <!-- ring highlight -->
         <div
-          class="pointer-events-none absolute inset-0 rounded-xl ring-0 ring-accent-400/0 transition-all duration-300 group-hover/card:ring-2 group-hover/card:ring-accent-400/60"
+          class="pointer-events-none absolute inset-0 rounded-xs ring-0 ring-accent/0 transition-all duration-300 group-hover/card:ring-2 group-hover/card:ring-accent/70"
         />
 
         <!-- top badges -->
@@ -93,11 +93,15 @@ const saved = computed(() => has(props.title.id))
       <Plus v-else class="size-4" />
     </button>
 
-    <div class="mt-2.5 px-0.5">
-      <h3 class="truncate text-[13px] leading-snug font-semibold text-hi sm:text-sm">
+    <!-- content block mirrors iHaveTicket's .product-card .content -->
+    <div class="pt-3 pr-2">
+      <h3
+        class="line-clamp-2 text-sm leading-[1.1] font-semibold text-hi sm:text-lg"
+        :class="dense ? 'sm:text-base' : ''"
+      >
         {{ title.title }}
       </h3>
-      <p v-if="!dense" class="mt-1 truncate text-[11px] text-lo sm:text-xs">
+      <p v-if="!dense" class="mt-2 truncate text-xs text-mid sm:mt-4 sm:text-sm">
         {{ title.genres[0] }} · {{ title.year }} · {{ KIND_LABEL[title.kind] }}
       </p>
     </div>

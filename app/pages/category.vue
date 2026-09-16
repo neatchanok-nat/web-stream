@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { LayoutGrid, Rows3 } from 'lucide-vue-next'
-import { ALL_TITLES, DRAMAS, MOVIES, SERIES, SHOWS, SORTS, YEARS } from '~/data/catalog'
+import { ALL_TITLES, CONCERTS, DRAMAS, MOVIES, SERIES, SHOWS, SORTS, YEARS } from '~/data/catalog'
 import { LIVE_STREAMS } from '~/data/live'
 
 useHead({ title: 'หมวดหมู่ — DUDI' })
@@ -14,6 +14,7 @@ const TABS = [
   { id: 'drama', label: 'ละคร' },
   { id: 'series', label: 'ซีรีส์' },
   { id: 'show', label: 'รายการ' },
+  { id: 'concert', label: 'คอนเสิร์ต' },
   { id: 'live', label: 'LIVE' },
 ] as const
 
@@ -38,6 +39,8 @@ const pool = computed(() => {
       return SERIES
     case 'show':
       return SHOWS
+    case 'concert':
+      return CONCERTS
     default:
       return ALL_TITLES
   }

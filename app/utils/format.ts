@@ -39,4 +39,5 @@ export const KIND_LABEL: Record<string, string> = {
   drama: 'ละคร',
   series: 'ซีรีส์',
   show: 'รายการ',
+  concert: 'คอนเสิร์ต',
 }

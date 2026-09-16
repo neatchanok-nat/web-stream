@@ -1,29 +1,20 @@
 <script setup lang="ts">
 import { ArrowRight, Crown } from 'lucide-vue-next'
-import { DRAMAS, getTitle, MOVIES, SERIES, SHOWS, pickBy } from '~/data/catalog'
+import { CONCERTS, DRAMAS, MOVIES, SERIES, SHOWS, pickBy } from '~/data/catalog'
 import { CREATORS, LIVE_STREAMS } from '~/data/live'
 import { CONTINUE_WATCHING } from '~/data/site'
-import type { Title } from '~/types'
 
 useHead({ title: 'DUDI ดูดิ — ดูหนัง ละคร ซีรีส์ และไลฟ์สด' })
 
-const heroItems = computed(
-  () =>
-    [
-      'mv-plerng-phayak',
-      'dr-buang-rak',
-      'sr-khadi-lap-7',
-      'mv-pathapee-plerng',
-      'sh-dudi-live-fest',
-    ]
-      .map((id) => getTitle(id))
-      .filter(Boolean) as Title[],
-)
+/* The hero runs the three concerts — the titles with real key art and video. */
+const heroItems = computed(() => CONCERTS)
 
+/* The three concerts lead the rail — they are the titles that actually play. */
 const trending = computed(() => [
-  ...pickBy(MOVIES, 3, 4),
-  ...pickBy(SERIES, 2, 3),
-  ...pickBy(DRAMAS, 5, 3),
+  ...CONCERTS,
+  ...pickBy(MOVIES, 3, 3),
+  ...pickBy(SERIES, 2, 2),
+  ...pickBy(DRAMAS, 5, 2),
 ])
 const popularDramas = computed(() => pickBy(DRAMAS, 1, 10))
 const recommendedMovies = computed(() => pickBy(MOVIES, 7, 14, 2))

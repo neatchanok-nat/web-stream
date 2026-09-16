@@ -166,6 +166,7 @@ export const SEARCH_TABS = [
   { id: 'drama', label: 'ละคร' },
   { id: 'series', label: 'ซีรีส์' },
   { id: 'show', label: 'รายการ' },
+  { id: 'concert', label: 'คอนเสิร์ต' },
   { id: 'live', label: 'LIVE' },
   { id: 'creator', label: 'ครีเอเตอร์' },
 ] as const

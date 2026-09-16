@@ -4,7 +4,7 @@ import type { Title } from '~/types'
 import { wideArt } from '~/utils/artwork'
 
 const props = defineProps<{ title: Title; width?: string }>()
-const art = computed(() => wideArt(props.title.artSeed))
+const art = computed(() => props.title.imageUrl ?? wideArt(props.title.artSeed))
 </script>
 
 <template>

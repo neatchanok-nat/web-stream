@@ -14,7 +14,7 @@ const props = withDefaults(
   { toWatch: false, showSynopsis: false },
 )
 
-const art = computed(() => landscapeArt(props.title.artSeed))
+const art = computed(() => props.title.imageUrl ?? landscapeArt(props.title.artSeed))
 const to = computed(() => (props.toWatch ? `/watch/${props.title.id}` : `/movie/${props.title.id}`))
 /** Deterministic mock view count so the row feels populated. */
 const views = computed(() => 40_000 + ((props.title.id.length * 98_317) % 2_400_000))
@@ -32,6 +32,7 @@ const views = computed(() => 40_000 + ((props.title.id.length * 98_317) % 2_400_
         loading="lazy"
         decoding="async"
         class="size-full object-cover transition-transform duration-700 group-hover/rec:scale-107"
+        :class="title.imageUrl && 'object-top'"
       />
       <div
         class="absolute inset-0 grid place-items-center bg-black/35 opacity-0 transition-opacity duration-300 group-hover/rec:opacity-100"
