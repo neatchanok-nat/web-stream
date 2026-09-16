@@ -63,7 +63,7 @@ const saved = computed(() => has(props.title.id))
         <div class="absolute inset-x-2 top-2 flex items-start justify-between gap-2">
           <TierBadge :tier="title.tier" compact />
           <span
-            class="inline-flex h-5 items-center gap-0.5 rounded-md bg-black/60 px-1.5 text-[10px] font-bold text-white backdrop-blur-sm"
+            class="inline-flex h-5 items-center gap-0.5 rounded-full bg-black/60 px-1.5 text-[10px] font-bold text-white backdrop-blur-sm"
           >
             <Star class="size-2.5 fill-accent-300 text-accent-300" />
             {{ title.score.toFixed(1) }}

@@ -12,9 +12,9 @@ const props = withDefaults(
 )
 const emit = defineEmits<{ 'update:modelValue': [string] }>()
 
-/* iHaveTicket's `.v-btn.tab`: grey pill, lilac + purple when active. */
+/* Dark pills: charcoal at rest, solid purple when selected. */
 const activeCls = computed(() =>
-  props.tone === 'accent' ? 'bg-iris-100 text-iris' : 'bg-white text-ink',
+  props.tone === 'accent' ? 'bg-iris text-white' : 'bg-white text-ink',
 )
 </script>
 
@@ -28,10 +28,10 @@ const activeCls = computed(() =>
         v-for="opt in options"
         :key="opt"
         type="button"
-        class="shrink-0 rounded-sm font-normal whitespace-nowrap transition-colors duration-200"
+        class="shrink-0 rounded-full font-medium whitespace-nowrap transition-colors duration-200"
         :class="[
-          size === 'sm' ? 'h-[35px] px-3.5 text-sm' : 'h-10 px-4 text-sm',
-          modelValue === opt ? activeCls : 'bg-[#ededed] text-[#8b8b8b] hover:bg-white',
+          size === 'sm' ? 'h-[35px] px-4 text-sm' : 'h-10 px-5 text-sm',
+          modelValue === opt ? activeCls : 'bg-surface-2 text-mid hover:bg-surface-3 hover:text-hi',
         ]"
         @click="emit('update:modelValue', opt)"
       >

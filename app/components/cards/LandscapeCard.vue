@@ -41,7 +41,7 @@ const meta = computed(() =>
           <TierBadge :tier="title.tier" compact />
           <span
             v-if="title.badges?.length"
-            class="rounded-md bg-accent/90 px-1.5 py-0.5 text-[10px] font-bold tracking-wide text-white uppercase"
+            class="rounded-full bg-accent/90 px-1.5 py-0.5 text-[10px] font-bold tracking-wide text-white uppercase"
           >
             {{ title.badges[0] }}
           </span>
